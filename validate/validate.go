@@ -1,24 +1,30 @@
-package ubl
+package validate
 
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 
 	xsdvalidate "github.com/terminalstatic/go-xsd-validate"
 )
 
-func Validate(filename string) {
+var xsdhandler *xsdvalidate.XsdHandler
 
+func Init() {
 	xsdvalidate.Init()
-	defer xsdvalidate.Cleanup()
-	xsdhandler, err := xsdvalidate.NewXsdHandlerUrl("./xsd/maindoc/UBL-Invoice-2.1.xsd", xsdvalidate.ParsErrVerbose)
+	var err error
+	xsdhandler, err = xsdvalidate.NewXsdHandlerUrl("./xsd/maindoc/UBL-Invoice-2.1.xsd", xsdvalidate.ParsErrVerbose)
 	if err != nil {
-		log.Printf("xsdhandler: %v", err)
 		panic(err)
 	}
-	defer xsdhandler.Free()
+}
+
+func Free() {
+	xsdvalidate.Cleanup()
+	xsdhandler.Free()
+}
+
+func Validate(filename string) error {
 
 	xmlFile, err := os.Open(filename)
 	if err != nil {
@@ -42,4 +48,5 @@ func Validate(filename string) {
 		}
 	}
 
+	return err
 }
