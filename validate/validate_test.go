@@ -9,15 +9,18 @@ import (
 
 func TestValidate(t *testing.T) {
 
-	validate.Init()
+	err := validate.Init("./xsd")
+	if err != nil {
+		t.Error(err)
+	}
 	defer validate.Free()
 
-	err := validate.Validate("testdata/invoice_base_correct.xml")
+	err = validate.File("testdata/invoice_base_correct.xml")
 	if err != nil {
 		t.Errorf("unexpected error: %v", err)
 	}
 
-	err = validate.Validate("testdata/invoice_syntax_error.xml")
+	err = validate.File("testdata/invoice_syntax_error.xml")
 	if err == nil {
 		t.Errorf("expected an error but did not receive one")
 	}
@@ -25,7 +28,7 @@ func TestValidate(t *testing.T) {
 		t.Errorf("expected 'Malformed xml document' but got %v", err)
 	}
 
-	err = validate.Validate("testdata/invoice_missing_element.xml")
+	err = validate.File("testdata/invoice_missing_element.xml")
 	if err == nil {
 		t.Errorf("expected an error but did not receive one")
 	}

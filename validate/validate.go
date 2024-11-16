@@ -4,19 +4,23 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 
 	xsdvalidate "github.com/terminalstatic/go-xsd-validate"
 )
 
 var xsdhandler *xsdvalidate.XsdHandler
 
-func Init() {
-	xsdvalidate.Init()
-	var err error
-	xsdhandler, err = xsdvalidate.NewXsdHandlerUrl("./xsd/maindoc/UBL-Invoice-2.1.xsd", xsdvalidate.ParsErrVerbose)
+func Init(xsdPath string) error {
+	err := xsdvalidate.Init()
 	if err != nil {
-		panic(err)
+		return err
 	}
+
+	fullpath := filepath.Join(xsdPath, "maindoc/UBL-Invoice-2.1.xsd")
+
+	xsdhandler, err = xsdvalidate.NewXsdHandlerUrl(fullpath, xsdvalidate.ParsErrVerbose)
+	return err
 }
 
 func Free() {
@@ -24,19 +28,23 @@ func Free() {
 	xsdhandler.Free()
 }
 
-func Validate(filename string) error {
+func File(filename string) error {
 
 	xmlFile, err := os.Open(filename)
 	if err != nil {
-		panic(err)
+		return err
 	}
 	defer xmlFile.Close()
 	inXml, err := ioutil.ReadAll(xmlFile)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
-	err = xsdhandler.ValidateMem(inXml, xsdvalidate.ValidErrDefault)
+	return Bytes(inXml)
+}
+
+func Bytes(xml []byte) error {
+	err := xsdhandler.ValidateMem(xml, xsdvalidate.ValidErrDefault)
 	if err != nil {
 		switch err.(type) {
 		case xsdvalidate.ValidationError:
