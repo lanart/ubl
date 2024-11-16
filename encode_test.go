@@ -1,15 +1,16 @@
-package encode
+package ubl_test
 
 import (
 	"testing"
 	"time"
 
-	"github.com/lanart/ubl/validate"
+	"github.com/lanart/ubl"
+	"github.com/lanart/ubl/validator"
 )
 
 func TestEncode(t *testing.T) {
 
-	invoice := UBLInvoice{
+	invoice := ubl.Invoice{
 		Xmlns:            "urn:oasis:names:specification:ubl:schema:xsd:Invoice-2",
 		Cac:              "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2",
 		Cbc:              "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2",
@@ -21,68 +22,68 @@ func TestEncode(t *testing.T) {
 		InvoiceTypeCode:  "380",
 		DocumentCurrency: "EUR",
 		BuyerReference:   "INV-12345",
-		SupplierParty: SupplierParty{
-			Party: Party{
+		SupplierParty: ubl.SupplierParty{
+			Party: ubl.Party{
 				PartyName: "ABC Supplies Ltd",
-				PostalAddress: PostalAddress{
+				PostalAddress: ubl.PostalAddress{
 					StreetName: "123 Supplier Street",
 					CityName:   "Supplier City",
 					PostalZone: "12345",
-					Country:    Country{IdentificationCode: "GB"},
+					Country:    ubl.Country{IdentificationCode: "GB"},
 				},
 			},
 		},
-		CustomerParty: CustomerParty{
-			Party: Party{
+		CustomerParty: ubl.CustomerParty{
+			Party: ubl.Party{
 				PartyName: "XYZ Corp",
-				PostalAddress: PostalAddress{
+				PostalAddress: ubl.PostalAddress{
 					StreetName: "789 Customer Avenue",
 					CityName:   "Customer Town",
 					PostalZone: "67890",
-					Country:    Country{IdentificationCode: "DE"},
+					Country:    ubl.Country{IdentificationCode: "DE"},
 				},
 			},
 		},
-		PaymentMeans: PaymentMeans{
+		PaymentMeans: ubl.PaymentMeans{
 			PaymentMeansCode: "1",
-			PayeeFinancialAccount: FinancialAccount{
+			PayeeFinancialAccount: ubl.FinancialAccount{
 				ID: "BE0123456789",
-				FinancialInstitutionBranch: FinancialInstitutionBranch{
+				FinancialInstitutionBranch: ubl.FinancialInstitutionBranch{
 					ID: "GEBABEBB",
 				},
 			},
 		},
 
-		TaxTotal: TaxTotal{
-			TaxAmount: Amount{Value: 20.0, CurrencyID: "EUR"},
+		TaxTotal: ubl.TaxTotal{
+			TaxAmount: ubl.Amount{Value: 20.0, CurrencyID: "EUR"},
 		},
-		LegalMonetaryTotal: MonetaryTotal{
-			LineExtensionAmount: Amount{Value: 100.0, CurrencyID: "EUR"},
-			TaxExclusiveAmount:  Amount{Value: 100.0, CurrencyID: "EUR"},
-			TaxInclusiveAmount:  Amount{Value: 120.0, CurrencyID: "EUR"},
-			PayableAmount:       Amount{Value: 120.0, CurrencyID: "EUR"},
+		LegalMonetaryTotal: ubl.MonetaryTotal{
+			LineExtensionAmount: ubl.Amount{Value: 100.0, CurrencyID: "EUR"},
+			TaxExclusiveAmount:  ubl.Amount{Value: 100.0, CurrencyID: "EUR"},
+			TaxInclusiveAmount:  ubl.Amount{Value: 120.0, CurrencyID: "EUR"},
+			PayableAmount:       ubl.Amount{Value: 120.0, CurrencyID: "EUR"},
 		},
-		InvoiceLines: []InvoiceLine{
+		InvoiceLines: []ubl.InvoiceLine{
 			{
 				ID:                  "1",
 				InvoicedQuantity:    10,
-				LineExtensionAmount: Amount{Value: 100.0, CurrencyID: "EUR"},
-				Item:                Item{Name: "Product A", Description: "High-quality item"},
-				Price:               Price{PriceAmount: Amount{Value: 10.0, CurrencyID: "EUR"}},
+				LineExtensionAmount: ubl.Amount{Value: 100.0, CurrencyID: "EUR"},
+				Item:                ubl.Item{Name: "Product A", Description: "High-quality item"},
+				Price:               ubl.Price{PriceAmount: ubl.Amount{Value: 10.0, CurrencyID: "EUR"}},
 			},
 		},
 	}
 
-	xmlBytes, err := CreateInvoice(&invoice)
+	xmlBytes, err := ubl.CreateInvoice(&invoice)
 
-	err = validate.Init("../validate/xsd")
+	v, err := validator.New("./validator/xsd")
 	if err != nil {
 		t.Error(err)
 	}
 
-	defer validate.Free()
+	defer v.Free()
 
-	err = validate.Bytes(xmlBytes)
+	err = v.ValidateBytes(xmlBytes)
 	if err != nil {
 		t.Error(err)
 	}

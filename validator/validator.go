@@ -1,4 +1,4 @@
-package validate
+package validator
 
 import (
 	"fmt"
@@ -9,26 +9,29 @@ import (
 	xsdvalidate "github.com/terminalstatic/go-xsd-validate"
 )
 
-var xsdhandler *xsdvalidate.XsdHandler
+type Validator struct {
+	xsdhandler *xsdvalidate.XsdHandler
+}
 
-func Init(xsdPath string) error {
+func New(xsdPath string) (*Validator, error) {
 	err := xsdvalidate.Init()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	fullpath := filepath.Join(xsdPath, "maindoc/UBL-Invoice-2.1.xsd")
 
-	xsdhandler, err = xsdvalidate.NewXsdHandlerUrl(fullpath, xsdvalidate.ParsErrVerbose)
-	return err
+	v := &Validator{}
+	v.xsdhandler, err = xsdvalidate.NewXsdHandlerUrl(fullpath, xsdvalidate.ParsErrVerbose)
+	return v, err
 }
 
-func Free() {
+func (v *Validator) Free() {
+	v.xsdhandler.Free()
 	xsdvalidate.Cleanup()
-	xsdhandler.Free()
 }
 
-func File(filename string) error {
+func (v *Validator) Validate(filename string) error {
 
 	xmlFile, err := os.Open(filename)
 	if err != nil {
@@ -40,11 +43,11 @@ func File(filename string) error {
 		return err
 	}
 
-	return Bytes(inXml)
+	return v.ValidateBytes(inXml)
 }
 
-func Bytes(xml []byte) error {
-	err := xsdhandler.ValidateMem(xml, xsdvalidate.ValidErrDefault)
+func (v *Validator) ValidateBytes(xml []byte) error {
+	err := v.xsdhandler.ValidateMem(xml, xsdvalidate.ValidErrDefault)
 	if err != nil {
 		switch err.(type) {
 		case xsdvalidate.ValidationError:

@@ -1,26 +1,26 @@
-package validate_test
+package validator_test
 
 import (
 	"strings"
 	"testing"
 
-	"github.com/lanart/ubl/validate"
+	"github.com/lanart/ubl/validator"
 )
 
 func TestValidate(t *testing.T) {
 
-	err := validate.Init("./xsd")
+	v, err := validator.New("./xsd")
 	if err != nil {
 		t.Error(err)
 	}
-	defer validate.Free()
+	defer v.Free()
 
-	err = validate.File("testdata/invoice_base_correct.xml")
+	err = v.Validate("testdata/invoice_base_correct.xml")
 	if err != nil {
 		t.Errorf("unexpected error: %v", err)
 	}
 
-	err = validate.File("testdata/invoice_syntax_error.xml")
+	err = v.Validate("testdata/invoice_syntax_error.xml")
 	if err == nil {
 		t.Errorf("expected an error but did not receive one")
 	}
@@ -28,7 +28,7 @@ func TestValidate(t *testing.T) {
 		t.Errorf("expected 'Malformed xml document' but got %v", err)
 	}
 
-	err = validate.File("testdata/invoice_missing_element.xml")
+	err = v.Validate("testdata/invoice_missing_element.xml")
 	if err == nil {
 		t.Errorf("expected an error but did not receive one")
 	}

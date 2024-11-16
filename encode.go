@@ -1,11 +1,11 @@
-package encode
+package ubl
 
 import (
 	"encoding/xml"
 )
 
-// UBLInvoice represents the root element of the UBL Invoice
-type UBLInvoice struct {
+// Invoice represents the root element of the UBL Invoice
+type Invoice struct {
 	XMLName            xml.Name      `xml:"Invoice"`
 	Xmlns              string        `xml:"xmlns,attr"`
 	Cac                string        `xml:"xmlns:cac,attr"`
@@ -117,6 +117,6 @@ type Price struct {
 	PriceAmount Amount `xml:"cbc:PriceAmount"`
 }
 
-func CreateInvoice(invoice *UBLInvoice) ([]byte, error) {
+func CreateInvoice(invoice *Invoice) ([]byte, error) {
 	return xml.MarshalIndent(invoice, "", "  ")
 }
