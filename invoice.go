@@ -7,6 +7,8 @@ package ubl
 
 import (
 	"encoding/xml"
+	"math"
+	"strconv"
 	"time"
 )
 
@@ -49,6 +51,122 @@ func NewInvoice() *Invoice {
 	}
 }
 
+// InitSupplier sets the supplier name and vat id
+func (inv *Invoice) InitSupplier(name, companyID string) {
+	inv.SupplierParty = SupplierParty{
+		Party: Party{
+			PartyName: name,
+			PartyTaxScheme: PartyTaxScheme{
+				CompanyID: companyID,
+				TaxScheme: TaxScheme{
+					ID: "VAT",
+				},
+			},
+		},
+	}
+}
+
+// InitCustomer sets the customer name and vat id
+func (inv *Invoice) InitCustomer(name, companyID string) {
+
+	inv.CustomerParty = CustomerParty{
+		Party: Party{
+			PartyName: name,
+			PartyTaxScheme: PartyTaxScheme{
+				CompanyID: companyID,
+				TaxScheme: TaxScheme{
+					ID: "VAT",
+				},
+			},
+		},
+	}
+}
+
+// InitPaymentMeans inits iban and bic
+func (inv *Invoice) InitPaymentMeans(iban, bic string) {
+	inv.PaymentMeans = PaymentMeans{
+		PaymentMeansCode: "1",
+		PayeeFinancialAccount: FinancialAccount{
+			ID: iban,
+			FinancialInstitutionBranch: FinancialInstitutionBranch{
+				ID: bic,
+			},
+		},
+	}
+}
+
+// InitPaymentTerms adds a note
+func (inv *Invoice) InitPaymentTerms(note string) {
+	inv.PaymentTerms = PaymentTerms{
+		Note: note,
+	}
+}
+
+// UblBytes converts the invoice to xml bytes
 func (inv *Invoice) UblBytes() ([]byte, error) {
 	return xml.MarshalIndent(inv, "", "  ")
+}
+
+// InvoiceLineHelper is a helper for adding lines and tax
+type InvoiceLineHelper struct {
+	Quantity    float64
+	Price       float64
+	Name        string
+	Description string
+}
+
+func round(amount float64) float64 {
+	return math.Round(amount*100) / 100
+}
+
+// AddLines is a helper to add InvoiceLines and Tax elements
+func (inv *Invoice) AddLines(lines []InvoiceLineHelper) {
+	sum := 0.0
+	sumTax := 0.0
+	for i, line := range lines {
+		lineAmountExcl := round(line.Quantity * line.Price)
+		tax := round(lineAmountExcl * 0.21)
+		sum = sum + lineAmountExcl
+		sumTax = sumTax + tax
+		invoiceLine := InvoiceLine{
+			ID:                  strconv.Itoa(i + 1),
+			InvoicedQuantity:    Quantity{Value: line.Quantity, UnitCode: "ZZ"},
+			LineExtensionAmount: Amount{Value: lineAmountExcl, CurrencyID: "EUR"},
+			TaxTotal: TaxTotal{
+				TaxAmount: Amount{Value: tax, CurrencyID: "EUR"},
+			},
+			Item: Item{
+				Name:        line.Name,
+				Description: line.Description,
+				ClassifiedTaxCategory: TaxCategory{
+					ID:      "S",
+					Name:    "03",
+					Percent: 21,
+					TaxScheme: TaxScheme{
+						ID: "VAT",
+					},
+				},
+			},
+			Price: Price{
+				PriceAmount: Amount{
+					Value:      line.Price,
+					CurrencyID: "EUR",
+				},
+			},
+		}
+		inv.InvoiceLines = append(inv.InvoiceLines, invoiceLine)
+	}
+
+	inv.TaxTotal = TaxTotal{
+		TaxAmount: Amount{Value: 20.0, CurrencyID: "EUR"},
+	}
+
+	total := round(sum + sumTax)
+
+	inv.LegalMonetaryTotal = MonetaryTotal{
+		LineExtensionAmount: Amount{Value: sum, CurrencyID: "EUR"},
+		TaxExclusiveAmount:  Amount{Value: sum, CurrencyID: "EUR"},
+		TaxInclusiveAmount:  Amount{Value: total, CurrencyID: "EUR"},
+		PayableAmount:       Amount{Value: total, CurrencyID: "EUR"},
+	}
 }

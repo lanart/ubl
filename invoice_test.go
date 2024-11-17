@@ -7,6 +7,65 @@ import (
 	"github.com/lanart/ubl/validate"
 )
 
+func TestNewInvoice(t *testing.T) {
+
+	inv := ubl.NewInvoice()
+	inv.ID = "INV-12345"
+	inv.OrderReference = "INV-12345"
+
+	inv.InitSupplier("ABC Supplies Ltd", "BE0123456789")
+
+	inv.SupplierParty.Party.PostalAddress = ubl.PostalAddress{
+		StreetName: "123 Supplier Street",
+		CityName:   "Supplier City",
+		PostalZone: "12345",
+		Country:    ubl.Country{IdentificationCode: "BE"},
+	}
+
+	inv.InitCustomer("XYZ Corp", "BE9876543210")
+
+	inv.CustomerParty.Party.PostalAddress = ubl.PostalAddress{
+		StreetName: "789 Customer Avenue",
+		CityName:   "Customer Town",
+		PostalZone: "67890",
+		Country:    ubl.Country{IdentificationCode: "BE"},
+	}
+
+	inv.InitPaymentMeans("9999999999", "GEBABEBB")
+
+	inv.InitPaymentTerms("You get a free sticker when you pay fast")
+
+	inv.AddLines([]ubl.InvoiceLineHelper{
+		ubl.InvoiceLineHelper{
+			Quantity:    10,
+			Price:       100,
+			Name:        "Product A",
+			Description: "High-quality item",
+		},
+	})
+
+	xmlBytes, err := inv.UblBytes()
+
+	v, err := validate.New()
+	if err != nil {
+		t.Error(err)
+	}
+
+	defer v.Free()
+
+	err = v.ValidateBytes(xmlBytes)
+	if err != nil {
+		t.Error(err)
+	}
+
+	// // Write to file or print
+	// err = os.WriteFile("invoice.xml", xmlBytes, 0644)
+	// if err != nil {
+	// 	fmt.Println("Error writing XML file:", err)
+	// }
+
+}
+
 func TestNewInvoiceCustom(t *testing.T) {
 
 	inv := ubl.NewInvoice()
@@ -56,18 +115,18 @@ func TestNewInvoiceCustom(t *testing.T) {
 
 	inv.TaxTotal = ubl.TaxTotal{
 		TaxAmount: ubl.Amount{Value: 20.0, CurrencyID: "EUR"},
-		TaxSubTotal: ubl.TaxSubtotal{
-			TaxableAmount: ubl.Amount{Value: 100.0, CurrencyID: "EUR"},
-			TaxAmount:     ubl.Amount{Value: 20.0, CurrencyID: "EUR"},
-			TaxCategory: ubl.TaxCategory{
-				ID:      "S",
-				Name:    "03",
-				Percent: 21,
-				TaxScheme: ubl.TaxScheme{
-					ID: "VAT",
-				},
-			},
-		},
+		// TaxSubTotal: ubl.TaxSubtotal{
+		// 	TaxableAmount: ubl.Amount{Value: 100.0, CurrencyID: "EUR"},
+		// 	TaxAmount:     ubl.Amount{Value: 20.0, CurrencyID: "EUR"},
+		// 	TaxCategory: ubl.TaxCategory{
+		// 		ID:      "S",
+		// 		Name:    "03",
+		// 		Percent: 21,
+		// 		TaxScheme: ubl.TaxScheme{
+		// 			ID: "VAT",
+		// 		},
+		// 	},
+		// },
 	}
 
 	inv.LegalMonetaryTotal = ubl.MonetaryTotal{

@@ -60,8 +60,8 @@ type PaymentTerms struct {
 
 // TaxTotal represents the tax total for the invoice
 type TaxTotal struct {
-	TaxAmount   Amount      `xml:"cbc:TaxAmount"`
-	TaxSubTotal TaxSubtotal `xml:"cac:TaxSubtotal"`
+	TaxAmount Amount `xml:"cbc:TaxAmount"`
+	// TaxSubTotal TaxSubtotal `xml:"cac:TaxSubtotal"`
 }
 
 // TaxSubtotal represents more detail about the tax
@@ -81,7 +81,7 @@ type MonetaryTotal struct {
 
 // Amount represents a monetary amount with a currency attribute
 type Amount struct {
-	Value      float32 `xml:",chardata"`
+	Value      float64 `xml:",chardata"`
 	CurrencyID string  `xml:"currencyID,attr"`
 }
 
@@ -89,7 +89,7 @@ type Amount struct {
 // Possible values for the unitcode:
 // https://docs.peppol.eu/poacc/billing/3.0/codelist/UNECERec20/
 type Quantity struct {
-	Value    float32 `xml:",chardata"`
+	Value    float64 `xml:",chardata"`
 	UnitCode string  `xml:"unitCode,attr"`
 }
 
@@ -98,6 +98,7 @@ type InvoiceLine struct {
 	ID                  string   `xml:"cbc:ID"`
 	InvoicedQuantity    Quantity `xml:"cbc:InvoicedQuantity"`
 	LineExtensionAmount Amount   `xml:"cbc:LineExtensionAmount"`
+	TaxTotal            TaxTotal `xml:"cac:TaxTotal"`
 	Item                Item     `xml:"cac:Item"`
 	Price               Price    `xml:"cac:Price"`
 }
@@ -113,7 +114,7 @@ type Item struct {
 type TaxCategory struct {
 	ID        string    `xml:"cbc:ID"`
 	Name      string    `xml:"cbc:Name"`
-	Percent   float32   `xml:"cbc:Percent"`
+	Percent   float64   `xml:"cbc:Percent"`
 	TaxScheme TaxScheme `xml:"cac:TaxScheme"`
 }
 
