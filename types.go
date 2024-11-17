@@ -12,8 +12,9 @@ type CustomerParty struct {
 
 // Party represents a general party structure
 type Party struct {
-	PartyName     string        `xml:"cac:PartyName>cbc:Name"`
-	PostalAddress PostalAddress `xml:"cac:PostalAddress"`
+	PartyName      string         `xml:"cac:PartyName>cbc:Name"`
+	PostalAddress  PostalAddress  `xml:"cac:PostalAddress"`
+	PartyTaxScheme PartyTaxScheme `xml:"cac:PartyTaxScheme"`
 }
 
 // PostalAddress represents address details
@@ -22,6 +23,11 @@ type PostalAddress struct {
 	CityName   string  `xml:"cbc:CityName"`
 	PostalZone string  `xml:"cbc:PostalZone"`
 	Country    Country `xml:"cac:Country"`
+}
+
+type PartyTaxScheme struct {
+	CompanyID string    `xml:"cbc:CompanyID"`
+	TaxScheme TaxScheme `xml:"cac:TaxScheme"`
 }
 
 // Country represents country details
@@ -87,8 +93,20 @@ type InvoiceLine struct {
 
 // Item represents an item being invoiced
 type Item struct {
-	Description string `xml:"cbc:Description"`
-	Name        string `xml:"cbc:Name"`
+	Description           string                `xml:"cbc:Description"`
+	Name                  string                `xml:"cbc:Name"`
+	ClassifiedTaxCategory ClassifiedTaxCategory `xml:"cac:ClassifiedTaxCategory"`
+}
+
+type ClassifiedTaxCategory struct {
+	ID        string    `xml:"cbc:ID"`
+	Name      string    `xml:"cbc:Name"`
+	Percent   float32   `xml:"cbc:Percent"`
+	TaxScheme TaxScheme `xml:"cac:TaxScheme"`
+}
+
+type TaxScheme struct {
+	ID string `xml:"cbc:ID"`
 }
 
 // Price represents pricing details for an item

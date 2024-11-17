@@ -22,6 +22,12 @@ func TestEncode(t *testing.T) {
 				PostalZone: "12345",
 				Country:    ubl.Country{IdentificationCode: "GB"},
 			},
+			PartyTaxScheme: ubl.PartyTaxScheme{
+				CompanyID: "BE0123456789",
+				TaxScheme: ubl.TaxScheme{
+					ID: "VAT",
+				},
+			},
 		},
 	}
 	inv.CustomerParty = ubl.CustomerParty{
@@ -38,7 +44,7 @@ func TestEncode(t *testing.T) {
 	inv.PaymentMeans = ubl.PaymentMeans{
 		PaymentMeansCode: "1",
 		PayeeFinancialAccount: ubl.FinancialAccount{
-			ID: "BE0123456789",
+			ID: "9999999999",
 			FinancialInstitutionBranch: ubl.FinancialInstitutionBranch{
 				ID: "GEBABEBB",
 			},
@@ -59,8 +65,19 @@ func TestEncode(t *testing.T) {
 			ID:                  "1",
 			InvoicedQuantity:    ubl.Quantity{Value: 10, UnitCode: "A9"},
 			LineExtensionAmount: ubl.Amount{Value: 100.0, CurrencyID: "EUR"},
-			Item:                ubl.Item{Name: "Product A", Description: "High-quality item"},
-			Price:               ubl.Price{PriceAmount: ubl.Amount{Value: 10.0, CurrencyID: "EUR"}},
+			Item: ubl.Item{
+				Name:        "Product A",
+				Description: "High-quality item",
+				ClassifiedTaxCategory: ubl.ClassifiedTaxCategory{
+					ID:      "S",
+					Name:    "03",
+					Percent: 21.00,
+					TaxScheme: ubl.TaxScheme{
+						ID: "VAT",
+					},
+				},
+			},
+			Price: ubl.Price{PriceAmount: ubl.Amount{Value: 10.0, CurrencyID: "EUR"}},
 		},
 	}
 
