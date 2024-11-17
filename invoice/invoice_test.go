@@ -57,7 +57,7 @@ func TestEncode(t *testing.T) {
 	inv.InvoiceLines = []ubl.InvoiceLine{
 		{
 			ID:                  "1",
-			InvoicedQuantity:    10,
+			InvoicedQuantity:    ubl.Quantity{Value: 10, UnitCode: "A9"},
 			LineExtensionAmount: ubl.Amount{Value: 100.0, CurrencyID: "EUR"},
 			Item:                ubl.Item{Name: "Product A", Description: "High-quality item"},
 			Price:               ubl.Price{PriceAmount: ubl.Amount{Value: 10.0, CurrencyID: "EUR"}},

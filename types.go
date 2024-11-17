@@ -70,13 +70,19 @@ type Amount struct {
 	CurrencyID string  `xml:"currencyID,attr"`
 }
 
+// Quantity
+type Quantity struct {
+	Value    float32 `xml:",chardata"`
+	UnitCode string  `xml:"unitCode,attr"`
+}
+
 // InvoiceLine represents individual line items
 type InvoiceLine struct {
-	ID                  string  `xml:"cbc:ID"`
-	InvoicedQuantity    float32 `xml:"cbc:InvoicedQuantity"`
-	LineExtensionAmount Amount  `xml:"cbc:LineExtensionAmount"`
-	Item                Item    `xml:"cac:Item"`
-	Price               Price   `xml:"cac:Price"`
+	ID                  string   `xml:"cbc:ID"`
+	InvoicedQuantity    Quantity `xml:"cbc:InvoicedQuantity"`
+	LineExtensionAmount Amount   `xml:"cbc:LineExtensionAmount"`
+	Item                Item     `xml:"cac:Item"`
+	Price               Price    `xml:"cac:Price"`
 }
 
 // Item represents an item being invoiced
