@@ -83,7 +83,7 @@ func TestEncode(t *testing.T) {
 
 	xmlBytes, err := inv.UblBytes()
 
-	v, err := validator.New("../validator/xsd")
+	v, err := validator.New()
 	if err != nil {
 		t.Error(err)
 	}

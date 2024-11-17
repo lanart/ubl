@@ -9,7 +9,7 @@ import (
 
 func TestValidate(t *testing.T) {
 
-	v, err := validator.New("./xsd")
+	v, err := validator.New()
 	if err != nil {
 		t.Error(err)
 	}
