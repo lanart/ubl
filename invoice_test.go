@@ -7,7 +7,7 @@ import (
 	"github.com/lanart/ubl/validate"
 )
 
-func TestEncode(t *testing.T) {
+func TestNewInvoiceCustom(t *testing.T) {
 
 	inv := ubl.NewInvoice()
 	inv.ID = "INV-12345"
@@ -50,9 +50,26 @@ func TestEncode(t *testing.T) {
 		},
 	}
 
+	inv.PaymentTerms = ubl.PaymentTerms{
+		Note: "You get a free sticker when you pay fast",
+	}
+
 	inv.TaxTotal = ubl.TaxTotal{
 		TaxAmount: ubl.Amount{Value: 20.0, CurrencyID: "EUR"},
+		TaxSubTotal: ubl.TaxSubtotal{
+			TaxableAmount: ubl.Amount{Value: 100.0, CurrencyID: "EUR"},
+			TaxAmount:     ubl.Amount{Value: 20.0, CurrencyID: "EUR"},
+			TaxCategory: ubl.TaxCategory{
+				ID:      "S",
+				Name:    "03",
+				Percent: 21,
+				TaxScheme: ubl.TaxScheme{
+					ID: "VAT",
+				},
+			},
+		},
 	}
+
 	inv.LegalMonetaryTotal = ubl.MonetaryTotal{
 		LineExtensionAmount: ubl.Amount{Value: 100.0, CurrencyID: "EUR"},
 		TaxExclusiveAmount:  ubl.Amount{Value: 100.0, CurrencyID: "EUR"},
@@ -67,10 +84,10 @@ func TestEncode(t *testing.T) {
 			Item: ubl.Item{
 				Name:        "Product A",
 				Description: "High-quality item",
-				ClassifiedTaxCategory: ubl.ClassifiedTaxCategory{
+				ClassifiedTaxCategory: ubl.TaxCategory{
 					ID:      "S",
 					Name:    "03",
-					Percent: 21.00,
+					Percent: 21,
 					TaxScheme: ubl.TaxScheme{
 						ID: "VAT",
 					},

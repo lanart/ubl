@@ -60,7 +60,15 @@ type PaymentTerms struct {
 
 // TaxTotal represents the tax total for the invoice
 type TaxTotal struct {
-	TaxAmount Amount `xml:"cbc:TaxAmount"`
+	TaxAmount   Amount      `xml:"cbc:TaxAmount"`
+	TaxSubTotal TaxSubtotal `xml:"cac:TaxSubtotal"`
+}
+
+// TaxSubtotal represents more detail about the tax
+type TaxSubtotal struct {
+	TaxableAmount Amount      `xml:"cbc:TaxableAmount"`
+	TaxAmount     Amount      `xml:"cbc:TaxAmount"`
+	TaxCategory   TaxCategory `xml:"cac:TaxCategory"`
 }
 
 // MonetaryTotal represents the total monetary amount
@@ -96,13 +104,13 @@ type InvoiceLine struct {
 
 // Item represents an item being invoiced
 type Item struct {
-	Description           string                `xml:"cbc:Description"`
-	Name                  string                `xml:"cbc:Name"`
-	ClassifiedTaxCategory ClassifiedTaxCategory `xml:"cac:ClassifiedTaxCategory"`
+	Description           string      `xml:"cbc:Description"`
+	Name                  string      `xml:"cbc:Name"`
+	ClassifiedTaxCategory TaxCategory `xml:"cac:ClassifiedTaxCategory"`
 }
 
-// ClassifiedTaxCategory for tax information
-type ClassifiedTaxCategory struct {
+// TaxCategory for tax information
+type TaxCategory struct {
 	ID        string    `xml:"cbc:ID"`
 	Name      string    `xml:"cbc:Name"`
 	Percent   float32   `xml:"cbc:Percent"`
