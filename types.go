@@ -1,9 +1,3 @@
-// Package ubl contains helpers to create a UBL Invoice.
-//
-// Use the [invoice] package to create the UBL Invoice.
-// The result can be validated with the [validate] package.
-// This is needed for Peppol: https://docs.peppol.eu/poacc/billing/3.0/
-// Specification: https://docs.peppol.eu/poacc/billing/3.0/syntax/ubl-invoice/tree/
 package ubl
 
 // SupplierParty represents the supplier's details

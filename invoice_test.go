@@ -1,16 +1,15 @@
-package invoice_test
+package ubl_test
 
 import (
 	"testing"
 
 	"github.com/lanart/ubl"
-	"github.com/lanart/ubl/invoice"
 	"github.com/lanart/ubl/validate"
 )
 
 func TestEncode(t *testing.T) {
 
-	inv := invoice.New()
+	inv := ubl.NewInvoice()
 	inv.ID = "INV-12345"
 	inv.OrderReference = "INV-12345"
 	inv.SupplierParty = ubl.SupplierParty{
