@@ -5,7 +5,7 @@ import (
 
 	"github.com/lanart/ubl"
 	"github.com/lanart/ubl/invoice"
-	"github.com/lanart/ubl/validator"
+	"github.com/lanart/ubl/validate"
 )
 
 func TestEncode(t *testing.T) {
@@ -83,7 +83,7 @@ func TestEncode(t *testing.T) {
 
 	xmlBytes, err := inv.UblBytes()
 
-	v, err := validator.New()
+	v, err := validate.New()
 	if err != nil {
 		t.Error(err)
 	}

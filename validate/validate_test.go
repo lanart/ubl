@@ -1,15 +1,15 @@
-package validator_test
+package validate_test
 
 import (
 	"strings"
 	"testing"
 
-	"github.com/lanart/ubl/validator"
+	"github.com/lanart/ubl/validate"
 )
 
 func TestValidate(t *testing.T) {
 
-	v, err := validator.New()
+	v, err := validate.New()
 	if err != nil {
 		t.Error(err)
 	}

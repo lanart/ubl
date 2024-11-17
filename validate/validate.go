@@ -1,4 +1,4 @@
-package validator
+package validate
 
 import (
 	"embed"
@@ -13,12 +13,12 @@ import (
 //go:embed "xsd"
 var xsdFiles embed.FS
 
-type Validator struct {
+type Validate struct {
 	xsdhandler *xsdvalidate.XsdHandler
 	xsdPath    string
 }
 
-func New() (*Validator, error) {
+func New() (*Validate, error) {
 	xsdPath, err := extractXSDs()
 	if err != nil {
 		return nil, fmt.Errorf("extracting XSD's: %w", err)
@@ -31,19 +31,19 @@ func New() (*Validator, error) {
 
 	fullpath := filepath.Join(xsdPath, "maindoc/UBL-Invoice-2.1.xsd")
 
-	v := &Validator{}
+	v := &Validate{}
 	v.xsdPath = xsdPath
 	v.xsdhandler, err = xsdvalidate.NewXsdHandlerUrl(fullpath, xsdvalidate.ParsErrVerbose)
 	return v, err
 }
 
-func (v *Validator) Free() {
-	os.RemoveAll(v.xsdPath)
+func (v *Validate) Free() {
+	_ = os.RemoveAll(v.xsdPath)
 	v.xsdhandler.Free()
 	xsdvalidate.Cleanup()
 }
 
-func (v *Validator) Validate(filename string) error {
+func (v *Validate) Validate(filename string) error {
 
 	xmlFile, err := os.Open(filename)
 	if err != nil {
@@ -58,7 +58,7 @@ func (v *Validator) Validate(filename string) error {
 	return v.ValidateBytes(inXml)
 }
 
-func (v *Validator) ValidateBytes(xml []byte) error {
+func (v *Validate) ValidateBytes(xml []byte) error {
 	err := v.xsdhandler.ValidateMem(xml, xsdvalidate.ValidErrDefault)
 	if err != nil {
 		switch err.(type) {

@@ -1,3 +1,9 @@
+// Package ubl contains helpers to create a UBL Invoice.
+//
+// Use the [invoice] package to create the UBL Invoice.
+// The result can be validated with the [validate] package.
+// This is needed for Peppol: https://docs.peppol.eu/poacc/billing/3.0/
+// Specification: https://docs.peppol.eu/poacc/billing/3.0/syntax/ubl-invoice/tree/
 package ubl
 
 // SupplierParty represents the supplier's details
@@ -25,6 +31,7 @@ type PostalAddress struct {
 	Country    Country `xml:"cac:Country"`
 }
 
+// PartyTaxScheme represents the company tax ID
 type PartyTaxScheme struct {
 	CompanyID string    `xml:"cbc:CompanyID"`
 	TaxScheme TaxScheme `xml:"cac:TaxScheme"`
@@ -76,7 +83,9 @@ type Amount struct {
 	CurrencyID string  `xml:"currencyID,attr"`
 }
 
-// Quantity
+// Quantity with the unitcode.
+// Possible values for the unitcode:
+// https://docs.peppol.eu/poacc/billing/3.0/codelist/UNECERec20/
 type Quantity struct {
 	Value    float32 `xml:",chardata"`
 	UnitCode string  `xml:"unitCode,attr"`
@@ -98,6 +107,7 @@ type Item struct {
 	ClassifiedTaxCategory ClassifiedTaxCategory `xml:"cac:ClassifiedTaxCategory"`
 }
 
+// ClassifiedTaxCategory for tax information
 type ClassifiedTaxCategory struct {
 	ID        string    `xml:"cbc:ID"`
 	Name      string    `xml:"cbc:Name"`
@@ -105,6 +115,7 @@ type ClassifiedTaxCategory struct {
 	TaxScheme TaxScheme `xml:"cac:TaxScheme"`
 }
 
+// TaxScheme = VAT
 type TaxScheme struct {
 	ID string `xml:"cbc:ID"`
 }
