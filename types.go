@@ -1,32 +1,5 @@
 package ubl
 
-import (
-	"encoding/xml"
-)
-
-// Invoice represents the root element of the UBL Invoice
-type Invoice struct {
-	XMLName            xml.Name      `xml:"Invoice"`
-	Xmlns              string        `xml:"xmlns,attr"`
-	Cac                string        `xml:"xmlns:cac,attr"`
-	Cbc                string        `xml:"xmlns:cbc,attr"`
-	CustomizationID    string        `xml:"cbc:CustomizationID"`
-	ProfileID          string        `xml:"cbc:ProfileID"`
-	ID                 string        `xml:"cbc:ID"`
-	IssueDate          string        `xml:"cbc:IssueDate"`
-	DueDate            string        `xml:"cbc:DueDate"`
-	InvoiceTypeCode    string        `xml:"cbc:InvoiceTypeCode"`
-	DocumentCurrency   string        `xml:"cbc:DocumentCurrencyCode"`
-	BuyerReference     string        `xml:"cbc:BuyerReference"`
-	SupplierParty      SupplierParty `xml:"cac:AccountingSupplierParty"`
-	CustomerParty      CustomerParty `xml:"cac:AccountingCustomerParty"`
-	PaymentMeans       PaymentMeans  `xml:"cac:PaymentMeans"`
-	PaymentTerms       PaymentTerms  `xml:"cac:PaymentTerms"`
-	TaxTotal           TaxTotal      `xml:"cac:TaxTotal"`
-	LegalMonetaryTotal MonetaryTotal `xml:"cac:LegalMonetaryTotal"`
-	InvoiceLines       []InvoiceLine `xml:"cac:InvoiceLine"`
-}
-
 // SupplierParty represents the supplier's details
 type SupplierParty struct {
 	Party Party `xml:"cac:Party"`
@@ -115,8 +88,4 @@ type Item struct {
 // Price represents pricing details for an item
 type Price struct {
 	PriceAmount Amount `xml:"cbc:PriceAmount"`
-}
-
-func CreateInvoice(invoice *Invoice) ([]byte, error) {
-	return xml.MarshalIndent(invoice, "", "  ")
 }

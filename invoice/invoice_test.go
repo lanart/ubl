@@ -1,0 +1,87 @@
+package invoice_test
+
+import (
+	"testing"
+
+	"github.com/lanart/ubl"
+	"github.com/lanart/ubl/invoice"
+	"github.com/lanart/ubl/validator"
+)
+
+func TestEncode(t *testing.T) {
+
+	inv := invoice.New()
+	inv.ID = "INV-12345"
+	inv.BuyerReference = "INV-12345"
+	inv.SupplierParty = ubl.SupplierParty{
+		Party: ubl.Party{
+			PartyName: "ABC Supplies Ltd",
+			PostalAddress: ubl.PostalAddress{
+				StreetName: "123 Supplier Street",
+				CityName:   "Supplier City",
+				PostalZone: "12345",
+				Country:    ubl.Country{IdentificationCode: "GB"},
+			},
+		},
+	}
+	inv.CustomerParty = ubl.CustomerParty{
+		Party: ubl.Party{
+			PartyName: "XYZ Corp",
+			PostalAddress: ubl.PostalAddress{
+				StreetName: "789 Customer Avenue",
+				CityName:   "Customer Town",
+				PostalZone: "67890",
+				Country:    ubl.Country{IdentificationCode: "DE"},
+			},
+		},
+	}
+	inv.PaymentMeans = ubl.PaymentMeans{
+		PaymentMeansCode: "1",
+		PayeeFinancialAccount: ubl.FinancialAccount{
+			ID: "BE0123456789",
+			FinancialInstitutionBranch: ubl.FinancialInstitutionBranch{
+				ID: "GEBABEBB",
+			},
+		},
+	}
+
+	inv.TaxTotal = ubl.TaxTotal{
+		TaxAmount: ubl.Amount{Value: 20.0, CurrencyID: "EUR"},
+	}
+	inv.LegalMonetaryTotal = ubl.MonetaryTotal{
+		LineExtensionAmount: ubl.Amount{Value: 100.0, CurrencyID: "EUR"},
+		TaxExclusiveAmount:  ubl.Amount{Value: 100.0, CurrencyID: "EUR"},
+		TaxInclusiveAmount:  ubl.Amount{Value: 120.0, CurrencyID: "EUR"},
+		PayableAmount:       ubl.Amount{Value: 120.0, CurrencyID: "EUR"},
+	}
+	inv.InvoiceLines = []ubl.InvoiceLine{
+		{
+			ID:                  "1",
+			InvoicedQuantity:    10,
+			LineExtensionAmount: ubl.Amount{Value: 100.0, CurrencyID: "EUR"},
+			Item:                ubl.Item{Name: "Product A", Description: "High-quality item"},
+			Price:               ubl.Price{PriceAmount: ubl.Amount{Value: 10.0, CurrencyID: "EUR"}},
+		},
+	}
+
+	xmlBytes, err := inv.UblBytes()
+
+	v, err := validator.New("../validator/xsd")
+	if err != nil {
+		t.Error(err)
+	}
+
+	defer v.Free()
+
+	err = v.ValidateBytes(xmlBytes)
+	if err != nil {
+		t.Error(err)
+	}
+
+	// // Write to file or print
+	// err = os.WriteFile("invoice.xml", xmlBytes, 0644)
+	// if err != nil {
+	// 	fmt.Println("Error writing XML file:", err)
+	// }
+
+}
