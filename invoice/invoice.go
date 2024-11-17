@@ -20,6 +20,7 @@ type Invoice struct {
 	InvoiceTypeCode    string            `xml:"cbc:InvoiceTypeCode"`
 	DocumentCurrency   string            `xml:"cbc:DocumentCurrencyCode"`
 	BuyerReference     string            `xml:"cbc:BuyerReference"`
+	OrderReference     string            `xml:"cac:OrderReference>cbc:ID"`
 	SupplierParty      ubl.SupplierParty `xml:"cac:AccountingSupplierParty"`
 	CustomerParty      ubl.CustomerParty `xml:"cac:AccountingCustomerParty"`
 	PaymentMeans       ubl.PaymentMeans  `xml:"cac:PaymentMeans"`

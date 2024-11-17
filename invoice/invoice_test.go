@@ -12,7 +12,7 @@ func TestEncode(t *testing.T) {
 
 	inv := invoice.New()
 	inv.ID = "INV-12345"
-	inv.BuyerReference = "INV-12345"
+	inv.OrderReference = "INV-12345"
 	inv.SupplierParty = ubl.SupplierParty{
 		Party: ubl.Party{
 			PartyName: "ABC Supplies Ltd",
