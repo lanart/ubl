@@ -9,9 +9,7 @@ Feel free to send a PR if you are missing something.
 Example:
 
 ```go
-inv := ubl.NewInvoice()
-inv.ID = "INV-12345"
-inv.OrderReference = "INV-12345"
+inv := ubl.NewInvoice("INV-12345")
 
 inv.InitSupplier("ABC Supplies Ltd", "BE0123456789")
 
