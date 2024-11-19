@@ -37,10 +37,11 @@ func TestNewInvoice(t *testing.T) {
 
 	inv.AddLines([]ubl.InvoiceLineHelper{
 		ubl.InvoiceLineHelper{
-			Quantity:    10,
-			Price:       100,
-			Name:        "Product A",
-			Description: "High-quality item",
+			Quantity:      10,
+			Price:         100,
+			Name:          "Product A",
+			Description:   "High-quality item",
+			TaxPercentage: 21.0,
 		},
 	})
 

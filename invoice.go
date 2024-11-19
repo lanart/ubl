@@ -109,10 +109,11 @@ func (inv *Invoice) UblBytes() ([]byte, error) {
 
 // InvoiceLineHelper is a helper for adding lines and tax
 type InvoiceLineHelper struct {
-	Quantity    float64
-	Price       float64
-	Name        string
-	Description string
+	Quantity      float64
+	Price         float64
+	TaxPercentage float64
+	Name          string
+	Description   string
 }
 
 func round(amount float64) float64 {
@@ -123,7 +124,9 @@ func round(amount float64) float64 {
 func (inv *Invoice) AddLines(lines []InvoiceLineHelper) {
 	sum := 0.0
 	sumTax := 0.0
+	taxPercentage := 21.0
 	for i, line := range lines {
+		taxPercentage = line.TaxPercentage
 		lineAmountExcl := round(line.Quantity * line.Price)
 		tax := round(lineAmountExcl * 0.21)
 		sum = sum + lineAmountExcl
@@ -141,7 +144,7 @@ func (inv *Invoice) AddLines(lines []InvoiceLineHelper) {
 				ClassifiedTaxCategory: TaxCategory{
 					ID:      "S",
 					Name:    "03",
-					Percent: 21,
+					Percent: line.TaxPercentage,
 					TaxScheme: TaxScheme{
 						ID: "VAT",
 					},
@@ -169,7 +172,7 @@ func (inv *Invoice) AddLines(lines []InvoiceLineHelper) {
 				TaxCategory: TaxCategory{
 					ID:      "S",
 					Name:    "03",
-					Percent: 21,
+					Percent: taxPercentage,
 					TaxScheme: TaxScheme{
 						ID: "VAT",
 					},
