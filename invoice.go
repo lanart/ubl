@@ -37,7 +37,7 @@ type Invoice struct {
 }
 
 // NewInvoice initializes a new Invoice struct
-func NewInvoice() *Invoice {
+func NewInvoice(id string) *Invoice {
 	return &Invoice{
 		Xmlns:            "urn:oasis:names:specification:ubl:schema:xsd:Invoice-2",
 		Cac:              "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2",
@@ -48,6 +48,8 @@ func NewInvoice() *Invoice {
 		DueDate:          time.Now().AddDate(0, 0, 30).Format("2006-01-02"),
 		InvoiceTypeCode:  "380",
 		DocumentCurrency: "EUR",
+		ID:               id,
+		OrderReference:   id,
 	}
 }
 

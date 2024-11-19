@@ -9,9 +9,7 @@ import (
 
 func TestNewInvoice(t *testing.T) {
 
-	inv := ubl.NewInvoice()
-	inv.ID = "INV-12345"
-	inv.OrderReference = "INV-12345"
+	inv := ubl.NewInvoice("INV-12345")
 
 	inv.InitSupplier("ABC Supplies Ltd", "BE0123456789")
 
@@ -69,9 +67,8 @@ func TestNewInvoice(t *testing.T) {
 
 func TestNewInvoiceCustom(t *testing.T) {
 
-	inv := ubl.NewInvoice()
-	inv.ID = "INV-12345"
-	inv.OrderReference = "INV-12345"
+	inv := ubl.NewInvoice("INV-12345")
+
 	inv.SupplierParty = ubl.SupplierParty{
 		Party: ubl.Party{
 			PartyName: "ABC Supplies Ltd",
@@ -116,18 +113,20 @@ func TestNewInvoiceCustom(t *testing.T) {
 
 	inv.TaxTotal = ubl.TaxTotal{
 		TaxAmount: ubl.Amount{Value: 20.0, CurrencyID: "EUR"},
-		// TaxSubTotal: ubl.TaxSubtotal{
-		// 	TaxableAmount: ubl.Amount{Value: 100.0, CurrencyID: "EUR"},
-		// 	TaxAmount:     ubl.Amount{Value: 20.0, CurrencyID: "EUR"},
-		// 	TaxCategory: ubl.TaxCategory{
-		// 		ID:      "S",
-		// 		Name:    "03",
-		// 		Percent: 21,
-		// 		TaxScheme: ubl.TaxScheme{
-		// 			ID: "VAT",
-		// 		},
-		// 	},
-		// },
+		TaxSubtotal: []ubl.TaxSubtotal{
+			ubl.TaxSubtotal{
+				TaxableAmount: ubl.Amount{Value: 100.0, CurrencyID: "EUR"},
+				TaxAmount:     ubl.Amount{Value: 20.0, CurrencyID: "EUR"},
+				TaxCategory: ubl.TaxCategory{
+					ID:      "S",
+					Name:    "03",
+					Percent: 21,
+					TaxScheme: ubl.TaxScheme{
+						ID: "VAT",
+					},
+				},
+			},
+		},
 	}
 
 	inv.LegalMonetaryTotal = ubl.MonetaryTotal{
