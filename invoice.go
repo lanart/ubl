@@ -159,6 +159,23 @@ func (inv *Invoice) AddLines(lines []InvoiceLineHelper) {
 
 	inv.TaxTotal = TaxTotal{
 		TaxAmount: Amount{Value: 20.0, CurrencyID: "EUR"},
+		TaxSubtotal: []TaxSubtotal{
+			TaxSubtotal{
+				TaxableAmount: Amount{
+					Value:      sum,
+					CurrencyID: "EUR",
+				},
+				TaxAmount: Amount{Value: sumTax, CurrencyID: "EUR"},
+				TaxCategory: TaxCategory{
+					ID:      "S",
+					Name:    "03",
+					Percent: 21,
+					TaxScheme: TaxScheme{
+						ID: "VAT",
+					},
+				},
+			},
+		},
 	}
 
 	total := round(sum + sumTax)

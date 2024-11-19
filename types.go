@@ -60,8 +60,8 @@ type PaymentTerms struct {
 
 // TaxTotal represents the tax total for the invoice
 type TaxTotal struct {
-	TaxAmount Amount `xml:"cbc:TaxAmount"`
-	// TaxSubTotal TaxSubtotal `xml:"cac:TaxSubtotal"`
+	TaxAmount   Amount        `xml:"cbc:TaxAmount"`
+	TaxSubtotal []TaxSubtotal `xml:"cac:TaxSubtotal"`
 }
 
 // TaxSubtotal represents more detail about the tax
