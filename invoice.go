@@ -6,34 +6,38 @@
 package ubl
 
 import (
+	"encoding/base64"
 	"encoding/xml"
 	"math"
+	"net/http"
+	"os"
 	"strconv"
 	"time"
 )
 
 // Invoice is the root element to create a UBL invoice
 type Invoice struct {
-	XMLName            xml.Name      `xml:"Invoice"`
-	Xmlns              string        `xml:"xmlns,attr"`
-	Cac                string        `xml:"xmlns:cac,attr"`
-	Cbc                string        `xml:"xmlns:cbc,attr"`
-	CustomizationID    string        `xml:"cbc:CustomizationID"`
-	ProfileID          string        `xml:"cbc:ProfileID"`
-	ID                 string        `xml:"cbc:ID"`
-	IssueDate          string        `xml:"cbc:IssueDate"`
-	DueDate            string        `xml:"cbc:DueDate"`
-	InvoiceTypeCode    string        `xml:"cbc:InvoiceTypeCode"`
-	DocumentCurrency   string        `xml:"cbc:DocumentCurrencyCode"`
-	BuyerReference     string        `xml:"cbc:BuyerReference"`
-	OrderReference     string        `xml:"cac:OrderReference>cbc:ID"`
-	SupplierParty      SupplierParty `xml:"cac:AccountingSupplierParty"`
-	CustomerParty      CustomerParty `xml:"cac:AccountingCustomerParty"`
-	PaymentMeans       PaymentMeans  `xml:"cac:PaymentMeans"`
-	PaymentTerms       PaymentTerms  `xml:"cac:PaymentTerms"`
-	TaxTotal           TaxTotal      `xml:"cac:TaxTotal"`
-	LegalMonetaryTotal MonetaryTotal `xml:"cac:LegalMonetaryTotal"`
-	InvoiceLines       []InvoiceLine `xml:"cac:InvoiceLine"`
+	XMLName                     xml.Name            `xml:"Invoice"`
+	Xmlns                       string              `xml:"xmlns,attr"`
+	Cac                         string              `xml:"xmlns:cac,attr"`
+	Cbc                         string              `xml:"xmlns:cbc,attr"`
+	CustomizationID             string              `xml:"cbc:CustomizationID"`
+	ProfileID                   string              `xml:"cbc:ProfileID"`
+	ID                          string              `xml:"cbc:ID"`
+	IssueDate                   string              `xml:"cbc:IssueDate"`
+	DueDate                     string              `xml:"cbc:DueDate"`
+	InvoiceTypeCode             string              `xml:"cbc:InvoiceTypeCode"`
+	DocumentCurrency            string              `xml:"cbc:DocumentCurrencyCode"`
+	BuyerReference              string              `xml:"cbc:BuyerReference"`
+	OrderReference              string              `xml:"cac:OrderReference>cbc:ID"`
+	AdditionalDocumentReference []DocumentReference `xml:"ac:AdditionalDocumentReference"`
+	SupplierParty               SupplierParty       `xml:"cac:AccountingSupplierParty"`
+	CustomerParty               CustomerParty       `xml:"cac:AccountingCustomerParty"`
+	PaymentMeans                PaymentMeans        `xml:"cac:PaymentMeans"`
+	PaymentTerms                PaymentTerms        `xml:"cac:PaymentTerms"`
+	TaxTotal                    TaxTotal            `xml:"cac:TaxTotal"`
+	LegalMonetaryTotal          MonetaryTotal       `xml:"cac:LegalMonetaryTotal"`
+	InvoiceLines                []InvoiceLine       `xml:"cac:InvoiceLine"`
 }
 
 // NewInvoice initializes a new Invoice struct
@@ -122,6 +126,39 @@ func round(amount float64) float64 {
 	return math.Round(amount*100) / 100
 }
 
+func (inv *Invoice) AddAttachment(filename string) error {
+
+	//TODO:
+	// - refactor. first all data in mem and then build xml
+	// - make types internal?
+
+	bytes, err := os.ReadFile(filename)
+	if err != nil {
+		return err
+	}
+
+	mime := http.DetectContentType(bytes)
+
+	encoded := base64.StdEncoding.EncodeToString(bytes)
+
+	inv.AdditionalDocumentReference = []DocumentReference{
+		{
+			ID:                  inv.ID,
+			DocumentDescription: "Invoice",
+			Attachment: []Attachment{
+				{EmbeddedDocumentBinaryObject{
+					Value:    encoded,
+					MimeCode: mime,
+					Filename: filename,
+				}},
+			},
+		},
+	}
+
+	return nil
+
+}
+
 // AddLines is a helper to add InvoiceLines and Tax elements
 func (inv *Invoice) AddLines(lines []InvoiceLineHelper) {
 	sum := 0.0
@@ -165,7 +202,7 @@ func (inv *Invoice) AddLines(lines []InvoiceLineHelper) {
 	inv.TaxTotal = TaxTotal{
 		TaxAmount: Amount{Value: 20.0, CurrencyID: "EUR"},
 		TaxSubtotal: []TaxSubtotal{
-			TaxSubtotal{
+			{
 				TaxableAmount: Amount{
 					Value:      sum,
 					CurrencyID: "EUR",

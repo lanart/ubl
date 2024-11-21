@@ -1,5 +1,21 @@
 package ubl
 
+type DocumentReference struct {
+	ID                  string       `xml:"cbc:ID"`
+	DocumentDescription string       `xml:"cbc:DocumentDescription"`
+	Attachment          []Attachment `xml:"cac:Attachment"`
+}
+
+type Attachment struct {
+	EmbeddedDocumentBinaryObject EmbeddedDocumentBinaryObject `xml:"cbc:EmbeddedDocumentBinaryObject"`
+}
+
+type EmbeddedDocumentBinaryObject struct {
+	Value    string `xml:",chardata"`
+	MimeCode string `xml:"mimeCode,attr"`
+	Filename string `xml:"filename,attr"`
+}
+
 // SupplierParty represents the supplier's details
 type SupplierParty struct {
 	Party Party `xml:"cac:Party"`
