@@ -1,4 +1,4 @@
-package ubl
+package xml
 
 type DocumentReference struct {
 	ID                  string       `xml:"cbc:ID"`
