@@ -8,6 +8,7 @@ package ubl
 import (
 	"encoding/base64"
 	"encoding/xml"
+	"fmt"
 	"math"
 	"net/http"
 	"os"
@@ -118,7 +119,12 @@ func (inv *Invoice) Generate() ([]byte, error) {
 
 	inv.addLines()
 
-	inv.addAttachment(inv.PdfInvoiceFilename, "Invoice")
+	if inv.PdfInvoiceFilename != "" {
+		err := inv.addAttachment(inv.PdfInvoiceFilename, "Invoice")
+		if err != nil {
+			return nil, fmt.Errorf("add attachment: %w", err)
+		}
+	}
 
 	return xml.MarshalIndent(inv.xml, "", "  ")
 }

@@ -16,7 +16,7 @@ type xmlInvoice struct {
 	DocumentCurrency            string                 `xml:"cbc:DocumentCurrencyCode"`
 	BuyerReference              string                 `xml:"cbc:BuyerReference"`
 	OrderReference              string                 `xml:"cac:OrderReference>cbc:ID"`
-	AdditionalDocumentReference []xmlDocumentReference `xml:"ac:AdditionalDocumentReference"`
+	AdditionalDocumentReference []xmlDocumentReference `xml:"cac:AdditionalDocumentReference"`
 	SupplierParty               xmlSupplierParty       `xml:"cac:AccountingSupplierParty"`
 	CustomerParty               xmlCustomerParty       `xml:"cac:AccountingCustomerParty"`
 	PaymentMeans                xmlPaymentMeans        `xml:"cac:PaymentMeans"`

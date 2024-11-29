@@ -27,9 +27,10 @@ func TestNewInvoice(t *testing.T) {
 			PostalZone:  "67890",
 			CountryCode: "BE",
 		},
-		Iban: "9999999999",
-		Bic:  "GEBABEBB",
-		Note: "You get a free sticker when you pay fast",
+		Iban:               "9999999999",
+		Bic:                "GEBABEBB",
+		Note:               "You get a free sticker when you pay fast",
+		PdfInvoiceFilename: "invoice_test.pdf",
 	}
 
 	inv.Lines = []ubl.InvoiceLine{
@@ -43,6 +44,9 @@ func TestNewInvoice(t *testing.T) {
 	}
 
 	xmlBytes, err := inv.Generate()
+	if err != nil {
+		t.Error(err)
+	}
 
 	v, err := validate.New()
 	if err != nil {
