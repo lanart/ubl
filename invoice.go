@@ -16,19 +16,19 @@ import (
 )
 
 type Invoice struct {
-	xml             *xmlInvoice
-	ID              string
-	SupplierName    string
-	SupplierVat     string
-	SupplierAddress Address
-	CustomerName    string
-	CustomerVat     string
-	CustomerAddress Address
-	Iban            string
-	Bic             string
-	Note            string
-	Lines           []InvoiceLine
-	Attachment      string
+	xml                *xmlInvoice
+	ID                 string
+	SupplierName       string
+	SupplierVat        string
+	SupplierAddress    Address
+	CustomerName       string
+	CustomerVat        string
+	CustomerAddress    Address
+	Iban               string
+	Bic                string
+	Note               string
+	Lines              []InvoiceLine
+	PdfInvoiceFilename string
 }
 
 type InvoiceLine struct {
@@ -118,12 +118,12 @@ func (inv *Invoice) Generate() ([]byte, error) {
 
 	inv.addLines()
 
-	inv.addAttachment(inv.Attachment)
+	inv.addAttachment(inv.PdfInvoiceFilename, "Invoice")
 
 	return xml.MarshalIndent(inv.xml, "", "  ")
 }
 
-func (inv *Invoice) addAttachment(filename string) error {
+func (inv *Invoice) addAttachment(filename, description string) error {
 
 	bytes, err := os.ReadFile(filename)
 	if err != nil {
@@ -137,7 +137,7 @@ func (inv *Invoice) addAttachment(filename string) error {
 	inv.xml.AdditionalDocumentReference = []xmlDocumentReference{
 		{
 			ID:                  inv.ID,
-			DocumentDescription: "Invoice",
+			DocumentDescription: description,
 			Attachment: []xmlAttachment{
 				{xmlEmbeddedDocumentBinaryObject{
 					Value:    encoded,
