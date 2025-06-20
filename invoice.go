@@ -53,7 +53,7 @@ func (inv *Invoice) Generate() ([]byte, error) {
 		Xmlns:            "urn:oasis:names:specification:ubl:schema:xsd:Invoice-2",
 		Cac:              "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2",
 		Cbc:              "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2",
-		CustomizationID:  "urn:cen.eu:en16931:2017",
+		CustomizationID:  "urn:cen.eu:en16931:2017#conformant#urn:UBL.BE:1.0.0.20180214",
 		ProfileID:        "urn:fdc:peppol.eu:2017:poacc:billing:01:1.0",
 		IssueDate:        time.Now().Format("2006-01-02"),
 		DueDate:          time.Now().AddDate(0, 0, 30).Format("2006-01-02"),
@@ -65,7 +65,13 @@ func (inv *Invoice) Generate() ([]byte, error) {
 
 	inv.xml.SupplierParty = xmlSupplierParty{
 		Party: xmlParty{
-			PartyName: inv.SupplierName,
+			EndpointID: xmlEndpointID{
+
+				Value:    inv.SupplierVat,
+				SchemeID: "9925",
+			},
+			PartyName:        inv.SupplierName,
+			RegistrationName: inv.SupplierName,
 			PartyTaxScheme: xmlPartyTaxScheme{
 				CompanyID: inv.SupplierVat,
 				TaxScheme: xmlTaxScheme{
@@ -91,11 +97,22 @@ func (inv *Invoice) Generate() ([]byte, error) {
 
 	inv.xml.CustomerParty = xmlCustomerParty{
 		Party: xmlParty{
-			PartyName: inv.CustomerName,
+			EndpointID: xmlEndpointID{
+
+				Value:    inv.CustomerVat,
+				SchemeID: "9925",
+			},
+			PartyName:        inv.CustomerName,
+			RegistrationName: inv.CustomerName,
 			PartyTaxScheme: xmlPartyTaxScheme{
 				CompanyID: inv.CustomerVat,
 				TaxScheme: xmlTaxScheme{
 					ID: "VAT",
+				},
+			},
+			PostalAddress: xmlPostalAddress{
+				Country: xmlCountry{
+					IdentificationCode: "BE",
 				},
 			},
 		},
@@ -141,6 +158,10 @@ func (inv *Invoice) addAttachment(filename, description string) error {
 	encoded := base64.StdEncoding.EncodeToString(bytes)
 
 	inv.xml.AdditionalDocumentReference = []xmlDocumentReference{
+		{
+			ID:                  "UBL.BE",
+			DocumentDescription: "CommercialInvoice",
+		},
 		{
 			ID:                  inv.ID,
 			DocumentDescription: description,
@@ -202,7 +223,7 @@ func (inv *Invoice) addLines() {
 	}
 
 	inv.xml.TaxTotal = xmlTaxTotal{
-		TaxAmount: xmlAmount{Value: 20.0, CurrencyID: "EUR"},
+		TaxAmount: xmlAmount{Value: sumTax, CurrencyID: "EUR"},
 		TaxSubtotal: []xmlTaxSubtotal{
 			{
 				TaxableAmount: xmlAmount{

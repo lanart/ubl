@@ -14,7 +14,7 @@ type xmlInvoice struct {
 	DueDate                     string                 `xml:"cbc:DueDate"`
 	InvoiceTypeCode             string                 `xml:"cbc:InvoiceTypeCode"`
 	DocumentCurrency            string                 `xml:"cbc:DocumentCurrencyCode"`
-	BuyerReference              string                 `xml:"cbc:BuyerReference"`
+	BuyerReference              string                 `xml:"cbc:BuyerReference,omitempty"`
 	OrderReference              string                 `xml:"cac:OrderReference>cbc:ID"`
 	AdditionalDocumentReference []xmlDocumentReference `xml:"cac:AdditionalDocumentReference"`
 	SupplierParty               xmlSupplierParty       `xml:"cac:AccountingSupplierParty"`
@@ -50,17 +50,24 @@ type xmlCustomerParty struct {
 	Party xmlParty `xml:"cac:Party"`
 }
 
+type xmlEndpointID struct {
+	Value    string `xml:",chardata"`
+	SchemeID string `xml:"schemeID,attr"`
+}
+
 type xmlParty struct {
-	PartyName      string            `xml:"cac:PartyName>cbc:Name"`
-	PostalAddress  xmlPostalAddress  `xml:"cac:PostalAddress"`
-	PartyTaxScheme xmlPartyTaxScheme `xml:"cac:PartyTaxScheme"`
+	EndpointID       xmlEndpointID     `xml:"cbc:EndpointID"`
+	PartyName        string            `xml:"cac:PartyName>cbc:Name"`
+	PostalAddress    xmlPostalAddress  `xml:"cac:PostalAddress"`
+	PartyTaxScheme   xmlPartyTaxScheme `xml:"cac:PartyTaxScheme"`
+	RegistrationName string            `xml:"cac:PartyLegalEntity>cbc:RegistrationName"`
 }
 
 type xmlPostalAddress struct {
-	StreetName string     `xml:"cbc:StreetName"`
-	CityName   string     `xml:"cbc:CityName"`
-	PostalZone string     `xml:"cbc:PostalZone"`
-	Country    xmlCountry `xml:"cac:Country"`
+	StreetName string     `xml:"cbc:StreetName,omitempty"`
+	CityName   string     `xml:"cbc:CityName,omitempty"`
+	PostalZone string     `xml:"cbc:PostalZone,omitempty"`
+	Country    xmlCountry `xml:"cac:Country,omitempty"`
 }
 
 type xmlPartyTaxScheme struct {
@@ -69,7 +76,7 @@ type xmlPartyTaxScheme struct {
 }
 
 type xmlCountry struct {
-	IdentificationCode string `xml:"cbc:IdentificationCode"`
+	IdentificationCode string `xml:"cbc:IdentificationCode,omitempty"`
 }
 
 type xmlPaymentMeans struct {
