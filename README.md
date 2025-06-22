@@ -1,10 +1,14 @@
 [![Go](https://github.com/lanart/ubl/actions/workflows/go.yml/badge.svg)](https://github.com/lanart/ubl/actions/workflows/go.yml)
 [![Go Reference](https://pkg.go.dev/badge/github.com/lanart/ubl.svg)](https://pkg.go.dev/github.com/lanart/ubl)
 
-A Go package to create a UBL invoice for Peppol. 
+A Go package to create a UBL (UBL.BE) invoice for Peppol. 
 This is a minimal implementation for the features we need.
 Feel free to send a PR if you are missing something.
 
+You can validate with schematron like this:
+```
+docker run --rm -e PLAIN_TEXT=true -v ./invoice.xml:/app/invoice.xml:ro ghcr.io/roel4d/schematron_ubl_be:latest
+```
 
 Example:
 
@@ -51,3 +55,4 @@ err = v.ValidateBytes(xmlBytes)
 
 os.WriteFile("invoice.xml", xmlBytes, 0644)
 ```
+
