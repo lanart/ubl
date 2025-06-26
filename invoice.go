@@ -67,8 +67,8 @@ func (inv *Invoice) Generate() ([]byte, error) {
 		Party: xmlParty{
 			EndpointID: xmlEndpointID{
 
-				Value:    inv.SupplierVat,
-				SchemeID: "9925",
+				Value:    inv.SupplierVat[2:],
+				SchemeID: "0208",
 			},
 			PartyName:        inv.SupplierName,
 			RegistrationName: inv.SupplierName,
@@ -99,8 +99,8 @@ func (inv *Invoice) Generate() ([]byte, error) {
 		Party: xmlParty{
 			EndpointID: xmlEndpointID{
 
-				Value:    inv.CustomerVat,
-				SchemeID: "9925",
+				Value:    inv.CustomerVat[2:],
+				SchemeID: "0208",
 			},
 			PartyName:        inv.CustomerName,
 			RegistrationName: inv.CustomerName,
