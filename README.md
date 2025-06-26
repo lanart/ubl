@@ -7,7 +7,7 @@ Feel free to send a PR if you are missing something.
 
 You can validate with schematron like this:
 ```
-docker run --rm -e PLAIN_TEXT=true -v ./invoice.xml:/app/invoice.xml:ro ghcr.io/roel4d/schematron_ubl_be:latest
+docker run --rm -e UBL_BE=true -e PLAIN_TEXT=true -v ./invoice.xml:/app/invoice.xml:ro ghcr.io/roel4d/peppol_schematron:latest
 ```
 
 Example:
